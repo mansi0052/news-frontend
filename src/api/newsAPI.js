@@ -1,17 +1,13 @@
+// frontend/src/api/newsAPI.js
 import axios from "axios";
 
-const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
-const BASE_URL = "https://newsapi.org/v2/top-headlines";
+const BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://news-backend-production-35eb.up.railway.app";
 
 export const fetchNewsByCategory = async (category = "general", query = "") => {
-  const url = `${BASE_URL}?category=${category}&q=${query}&language=en&pageSize=30&apiKey=${API_KEY}`;
+  const url = `${BASE_URL}/api/news?category=${category}&q=${query}`;
 
   try {
-    const response = await axios.get(url, {
-      headers: {
-        "User-Agent": "NewsDash/1.0", 
-      },
-    });
+    const response = await axios.get(url);
     return response.data.articles || [];
   } catch (error) {
     console.error("Error fetching news:", error);
