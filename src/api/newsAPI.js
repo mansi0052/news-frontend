@@ -8,7 +8,7 @@ export const fetchNewsByCategory = async (category = "general", query = "") => {
 
   try {
     const response = await axios.get(url);
-    return response.data.articles || [];
+    return response.data || [];
   } catch (error) {
     console.error("Error fetching news:", error);
     return [];
