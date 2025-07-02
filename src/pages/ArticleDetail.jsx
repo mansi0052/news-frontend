@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const fallbackImage = "https://placehold.co/600x300?text=NewsDash";
-
-const response = await axios.post(
-  `${import.meta.env.VITE_BACKEND_URL}/api/summarize`,
-  { prompt }
-);
 
 const ArticleDetail = () => {
   const location = useLocation();
@@ -42,21 +38,18 @@ const ArticleDetail = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/summarize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/summarize`,
+        {
           prompt: `Summarize the following article in 3 bullet points:\n\n${article.content || article.description || article.title}`,
-        }),
-      });
+        }
+      );
 
-      const data = await res.json();
-
-      if (res.ok && data.summary) {
-        setSummary(data.summary);
-        sessionStorage.setItem(article.url, data.summary);
+      if (res.status === 200 && res.data.summary) {
+        setSummary(res.data.summary);
+        sessionStorage.setItem(article.url, res.data.summary);
       } else {
-        setError(data.error || "Failed to get summary.");
+        setError("Failed to get summary.");
       }
     } catch (err) {
       console.error("⚠️ Summary error:", err);
@@ -70,25 +63,21 @@ const ArticleDetail = () => {
     if (!summary || !article) return;
 
     try {
-      const res = await fetch("http://localhost:5001/api/summaries", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/summaries`,
+        {
           title: article.title,
           url: article.url,
           source: article.source?.name || "Unknown",
           date: article.publishedAt || new Date().toISOString(),
           summary,
-        }),
-      });
+        }
+      );
 
-      const data = await res.json();
-      if (res.ok) {
+      if (res.status === 200) {
         alert("✅ Summary saved successfully!");
       } else {
-        alert("❌ Failed to save summary: " + data.error);
+        alert("❌ Failed to save summary: " + res.data.error);
       }
     } catch (err) {
       console.error("❌ Save error:", err);
