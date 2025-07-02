@@ -7,7 +7,11 @@ export const fetchNewsByCategory = async (category = "general", query = "") => {
   const url = `${BASE_URL}?category=${category}&q=${query}&language=en&pageSize=30&apiKey=${API_KEY}`;
 
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "NewsDash/1.0", 
+      },
+    });
     return response.data.articles || [];
   } catch (error) {
     console.error("Error fetching news:", error);
