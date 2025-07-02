@@ -3,6 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const fallbackImage = "https://placehold.co/600x300?text=NewsDash";
 
+const response = await axios.post(
+  `${import.meta.env.VITE_BACKEND_URL}/api/summarize`,
+  { prompt }
+);
+
 const ArticleDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
